@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bachchon Ka Quiz - Class 1 to 6</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#0284c7" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+body{font-family:'Noto Sans Devanagari','Fredoka',sans-serif;background:linear-gradient(135deg,#e0f2fe 0%,#fef9c3 50%,#fce7f3 100%);min-height:100vh;color:#1e293b}
+.font-display{font-family:'Fredoka','Noto Sans Devanagari',sans-serif}
+@keyframes popIn{0%{transform:scale(.94);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.animate-pop{animation:popIn .35s cubic-bezier(.22,1,.36,1) forwards}
+.animate-float{animation:floatSlow 3s ease-in-out infinite}
+.option-btn{transition:all .2s ease;border-width:3px;min-height:56px}
+.option-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px -4px rgba(14,165,233,.25)}
+.pick-card{transition:transform .2s ease,box-shadow .2s ease}
+.pick-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(0,0,0,.25)}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #0ea5e9;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.animate-pop,.animate-float{animation:none}.pick-card:hover{transform:none}}
+</style>
+</head>
+<body class="antialiased">
+<div class="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+
+<header class="bg-white/95 rounded-3xl shadow-lg border-4 border-sky-400 p-4 sm:p-5 mb-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="flex items-center gap-3 text-center sm:text-left">
+    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-400 to-rose-500 flex items-center justify-center text-3xl shadow-md shrink-0 animate-float">🎓</div>
+    <div>
+      <h1 class="font-display text-xl sm:text-2xl font-extrabold text-sky-800 leading-tight">बच्चों का क्विज़ — कक्षा 1 से 6</h1>
+      <p class="text-sm sm:text-base font-bold text-amber-600">कक्षा 6: RBSE पाठ्यक्रम + रोज़ नया क्विज़</p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center justify-center gap-2">
+    <button id="soundToggleBtn" class="px-3.5 py-2 rounded-2xl bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold text-xs sm:text-sm flex items-center gap-1.5 border-2 border-indigo-300 min-h-[44px]"><span id="soundIcon">🔊</span><span id="soundLabel">आवाज़ चालू / Sound ON</span></button>
+    <button id="studyBtn" class="px-3.5 py-2 rounded-2xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs sm:text-sm flex items-center gap-1.5 border-2 border-emerald-300 min-h-[44px]">📖 प्रश्न-उत्तर पढ़ें / Study</button>
+  </div>
+</header>
+
+<!-- STEP 1: CLASS -->
+<main id="homeScreen" class="animate-pop">
+  <div class="bg-white/95 rounded-3xl shadow-xl border-4 border-amber-300 p-5 sm:p-8 text-center">
+    <span class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs sm:text-sm mb-2">चरण 1 / Step 1</span>
+    <h2 class="text-2xl sm:text-3xl font-extrabold mb-1">अपनी कक्षा चुनें</h2>
+    <p class="text-base sm:text-lg font-semibold text-slate-600 mb-6">Choose your class • कक्षा 1–5: 5 विषय • कक्षा 6: RBSE पाठ-वार + आज का क्विज़</p>
+    <div id="classGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto"></div>
+    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 sm:p-5 text-left max-w-2xl mx-auto mt-7">
+      <h3 class="font-bold text-sky-900 text-base sm:text-lg mb-2">📋 निर्देश / Instructions:</h3>
+      <ul class="space-y-1.5 text-sm sm:text-base text-slate-700">
+        <li>1️⃣ कक्षा चुनें, फिर विषय चुनें। <span class="text-slate-500">(Pick a class, then a subject.)</span></li>
+        <li>💡 कठिन सवाल पर 'संकेत' लें, उत्तर के बाद व्याख्या पढ़ें। <span class="text-slate-500">(Use hints, read explanations.)</span></li>
+        <li>🔀 हर बार प्रश्न और विकल्प नए क्रम में आते हैं। <span class="text-slate-500">(Questions and options shuffle every time.)</span></li>
+        <li>🏅 हर विषय का सबसे अच्छा स्कोर इसी फ़ोन में याद रहता है। <span class="text-slate-500">(Best scores are saved on this device.)</span></li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<!-- STEP 2: SUBJECT -->
+<section id="subjectScreen" class="hidden">
+  <div class="bg-white/95 rounded-3xl shadow-xl border-4 border-amber-300 p-5 sm:p-8 text-center">
+    <div class="flex justify-start mb-3">
+      <button data-home class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm min-h-[44px]">← कक्षा बदलें / Change Class</button>
+    </div>
+    <span class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs sm:text-sm mb-2">चरण 2 / Step 2</span>
+    <h2 id="subjectTitle" class="text-2xl sm:text-3xl font-extrabold mb-1"></h2>
+    <p class="text-base sm:text-lg font-semibold text-slate-600 mb-6">विषय चुनें / Choose a subject</p>
+    <div id="subjectGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto"></div>
+  </div>
+</section>
+
+<!-- CLASS 6 (RBSE) -->
+<section id="class6Screen" class="hidden">
+  <div class="bg-white/95 rounded-3xl shadow-xl border-4 border-indigo-300 p-5 sm:p-8">
+    <div class="flex justify-start mb-3">
+      <button data-home class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm min-h-[44px]">← कक्षा बदलें / Change Class</button>
+    </div>
+    <div class="text-center mb-5">
+      <h2 class="text-2xl sm:text-3xl font-extrabold">🎒 कक्षा 6 / Class 6</h2>
+      <p id="c6Board" class="text-sm sm:text-base font-bold text-indigo-700"></p>
+    </div>
+    <div class="rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-white p-5 sm:p-6 shadow-lg mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="text-6xl text-center">📅</div>
+        <div class="flex-1 text-center sm:text-left">
+          <p class="text-xs sm:text-sm font-bold uppercase opacity-90">आज का क्विज़ / Today's Quiz</p>
+          <h3 id="dailyDate" class="text-2xl sm:text-3xl font-extrabold leading-tight"></h3>
+          <p id="dailyInfo" class="text-sm font-semibold opacity-95 mt-1"></p>
+          <p id="dailyDone" class="text-sm font-extrabold text-amber-200 mt-1"></p>
+        </div>
+        <button id="dailyStart" class="px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-indigo-950 font-extrabold text-base sm:text-lg shadow-lg min-h-[48px]">▶ शुरू करें / Start</button>
+      </div>
+    </div>
+    <p class="text-center text-base sm:text-lg font-extrabold text-slate-700 mb-3">या विषय चुनकर पाठ-वार अभ्यास करें / Or practise chapter-wise</p>
+    <div id="c6SubjectGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+</section>
+
+<!-- CLASS 6 CHAPTERS -->
+<section id="chapterScreen" class="hidden">
+  <div class="bg-white/95 rounded-3xl shadow-xl border-4 border-indigo-300 p-5 sm:p-8">
+    <div class="flex justify-start mb-3">
+      <button id="chapBack" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm min-h-[44px]">← विषय बदलें / Change Subject</button>
+    </div>
+    <div class="text-center mb-5">
+      <h2 id="chapTitle" class="text-2xl sm:text-3xl font-extrabold"></h2>
+      <p id="chapBook" class="text-sm sm:text-base font-bold text-indigo-700"></p>
+    </div>
+    <button id="chapAll" class="w-full mb-4 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-base sm:text-lg shadow-lg min-h-[48px]"></button>
+    <div id="chapList" class="space-y-3"></div>
+    <p class="text-xs text-slate-500 text-center mt-5">अर्धवार्षिक (Term-1) के पाठ जोड़े गए हैं। वार्षिक परीक्षा के पाठ जल्द जुड़ेंगे। / Term-1 chapters added; Term-2 coming soon.</p>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quizScreen" class="hidden">
+  <div class="bg-white/95 rounded-3xl shadow-md border-2 border-sky-300 p-4 mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+      <button data-subjects class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm min-h-[44px]">← विषय बदलें / Change Subject</button>
+      <span id="quizSetBadge" class="px-3.5 py-1 rounded-full bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm"></span>
+      <div class="px-4 py-1.5 rounded-2xl bg-emerald-100 border-2 border-emerald-400 text-emerald-900 font-extrabold text-sm sm:text-base">⭐ स्कोर / Score: <span id="liveScore">0</span></div>
+    </div>
+    <div class="flex items-center justify-between flex-wrap gap-1 text-xs sm:text-sm font-bold text-slate-600 mb-1.5">
+      <span id="questionCounterText"></span><span id="categoryBadge" class="text-purple-700"></span>
+    </div>
+    <div class="w-full h-3.5 bg-slate-200 rounded-full overflow-hidden p-0.5"><div id="progressBar" class="h-full bg-gradient-to-r from-sky-500 via-emerald-400 to-amber-400 rounded-full transition-all duration-300" style="width:5%"></div></div>
+  </div>
+  <div class="bg-white rounded-3xl shadow-xl border-4 border-sky-300 p-5 sm:p-7">
+    <div class="w-full rounded-2xl bg-gradient-to-r from-sky-100 via-indigo-50 to-amber-100 border-2 border-sky-200 p-4 mb-5 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+      <div id="visualGraphic" class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white shadow-md border-2 border-sky-200 flex items-center justify-center shrink-0 text-5xl sm:text-6xl"></div>
+      <div>
+        <h2 id="questionHi" class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug"></h2>
+        <p id="questionEn" class="text-base sm:text-lg font-bold text-sky-800 mt-1"></p>
+      </div>
+    </div>
+    <div id="hintRow" class="mb-5 flex flex-col sm:flex-row sm:items-center gap-2">
+      <button id="hintBtn" class="self-start px-4 py-2 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-sm border-2 border-amber-300 shrink-0 min-h-[44px]">💡 संकेत देखें / Show Hint</button>
+      <div id="hintBox" class="hidden flex-1 bg-amber-50 border-2 border-amber-300 rounded-2xl px-4 py-2.5 text-sm text-amber-950 font-semibold"></div>
+    </div>
+    <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-5"></div>
+    <div id="feedbackBox" class="hidden rounded-2xl p-4 sm:p-5 border-2 mb-5 animate-pop">
+      <div id="feedbackHeader" class="font-extrabold text-lg sm:text-xl mb-1.5"></div>
+      <div id="correctAnswerReveal" class="font-bold text-sm sm:text-base mb-2"></div>
+      <div class="bg-white/80 rounded-xl p-3 border border-slate-200 text-sm sm:text-base">
+        <span class="font-extrabold text-indigo-800 block mb-0.5">📘 व्याख्या / Explanation:</span>
+        <p id="explanationHi" class="text-slate-800 font-semibold"></p>
+        <p id="explanationEn" class="text-slate-600 mt-0.5"></p>
+      </div>
+    </div>
+    <div class="flex justify-end">
+      <button id="nextBtn" class="hidden px-6 py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-extrabold text-base sm:text-lg shadow-lg"></button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section id="resultScreen" class="hidden">
+  <div class="bg-white rounded-3xl shadow-xl border-4 border-emerald-400 p-6 sm:p-8 text-center">
+    <div id="resultTrophy" class="text-6xl sm:text-7xl mb-3 animate-float">🏆</div>
+    <div id="starRating" class="text-3xl sm:text-4xl mb-3 tracking-widest"></div>
+    <h2 id="resultTitleHi" class="text-2xl sm:text-3xl font-extrabold text-emerald-800"></h2>
+    <p id="resultTitleEn" class="text-lg sm:text-xl font-bold text-slate-600 mb-1"></p>
+    <p id="resultWhat" class="text-sm font-bold text-sky-700 mb-1"></p>
+    <p id="bestLine" class="text-sm font-bold text-amber-700 mb-6"></p>
+    <div class="grid grid-cols-3 gap-3 sm:gap-5 max-w-xl mx-auto mb-7">
+      <div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-3 sm:p-4"><div class="text-2xl sm:text-3xl font-extrabold text-sky-700" id="totalQStat"></div><div class="text-xs sm:text-sm font-bold text-slate-600">कुल प्रश्न<br/>Total</div></div>
+      <div class="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-3 sm:p-4"><div class="text-2xl sm:text-3xl font-extrabold text-emerald-700" id="correctQStat"></div><div class="text-xs sm:text-sm font-bold text-slate-600">सही उत्तर<br/>Correct</div></div>
+      <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-3 sm:p-4"><div class="text-2xl sm:text-3xl font-extrabold text-rose-700" id="wrongQStat"></div><div class="text-xs sm:text-sm font-bold text-slate-600">गलत उत्तर<br/>Wrong</div></div>
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <button id="reviewWrongBtn" class="px-5 py-3.5 rounded-2xl bg-rose-100 hover:bg-rose-200 text-rose-900 font-extrabold text-sm sm:text-base border-2 border-rose-300">🔍 गलत उत्तर देखें / Review Wrong Answers</button>
+      <button id="restartBtn" class="px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm sm:text-base shadow-lg">🔄 फिर से खेलें / Play Again</button>
+      <button data-subjects class="px-5 py-3.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-sm sm:text-base border-2 border-amber-300">📚 दूसरा विषय / Another Subject</button>
+      <button data-home class="px-5 py-3.5 rounded-2xl bg-sky-100 hover:bg-sky-200 text-sky-900 font-extrabold text-sm sm:text-base border-2 border-sky-300">🏠 दूसरी कक्षा / Another Class</button>
+    </div>
+    <div id="wrongReviewContainer" class="hidden mt-7 text-left max-w-3xl mx-auto border-t-2 border-slate-200 pt-6">
+      <h3 class="text-lg sm:text-xl font-extrabold text-rose-800 mb-4">📝 गलत उत्तरों की समीक्षा (Review):</h3>
+      <div id="wrongReviewList" class="space-y-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STUDY SHEET -->
+<section id="studySheetScreen" class="hidden">
+  <div class="bg-white rounded-3xl shadow-xl border-4 border-emerald-400 p-5 sm:p-8">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b-2 border-slate-200">
+      <button id="sheetBack" class="px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm min-h-[44px]">← वापस / Back</button>
+      <div class="flex flex-wrap gap-2">
+        <select id="sheetClass" aria-label="Class" class="px-3.5 py-2 rounded-xl border-2 border-sky-300 bg-sky-50 font-bold text-base text-sky-950 min-h-[44px]"></select>
+        <select id="sheetSubject" aria-label="Subject" class="px-3.5 py-2 rounded-xl border-2 border-sky-300 bg-sky-50 font-bold text-base text-sky-950 min-h-[44px]"></select>
+      </div>
+    </div>
+    <div class="text-center mb-6">
+      <h2 id="sheetTitle" class="text-2xl font-extrabold text-sky-900"></h2>
+      <p class="text-sm sm:text-base font-bold text-slate-600">Questions &amp; Answers for revision</p>
+    </div>
+    <div id="studySheetList" class="space-y-3"></div>
+  </div>
+</section>
+
+<footer class="text-center text-xs text-slate-500 mt-6 mb-2"><a href="privacy.html" class="underline">Privacy Policy / गोपनीयता नीति</a></footer>
+</div>
+
+<script src="data/gk.js"></script>
+<script src="data/class1.js"></script>
+<script src="data/class2.js"></script>
+<script src="data/class3.js"></script>
+<script src="data/class4.js"></script>
+<script src="data/class5.js"></script>
+<script src="data/class6.js"></script>
+<script>
+{
+const CLASSES={
+1:{emoji:"🐣",card:"from-pink-50 to-rose-100 border-rose-400",btn:"bg-rose-500 hover:bg-rose-600"},
+2:{emoji:"🦋",card:"from-amber-50 to-orange-100 border-amber-400",btn:"bg-amber-500 hover:bg-amber-600"},
+3:{emoji:"🌻",card:"from-emerald-50 to-green-100 border-emerald-400",btn:"bg-emerald-600 hover:bg-emerald-700"},
+4:{emoji:"🪐",card:"from-sky-50 to-blue-100 border-sky-400",btn:"bg-sky-600 hover:bg-sky-700"},
+5:{emoji:"🚀",card:"from-violet-50 to-purple-100 border-violet-400",btn:"bg-violet-600 hover:bg-violet-700"},
+6:{emoji:"🎒",card:"from-indigo-50 to-indigo-100 border-indigo-500",btn:"bg-indigo-600 hover:bg-indigo-700",rbse:true}
+};
+const SUBJECTS=[
+{key:"gk",hi:"सामान्य ज्ञान",en:"General Knowledge",emoji:"🌍",card:"from-sky-50 to-blue-100 border-sky-400",btn:"bg-sky-600 hover:bg-sky-700"},
+{key:"math",hi:"गणित",en:"Maths",emoji:"🔢",card:"from-amber-50 to-orange-100 border-amber-400",btn:"bg-amber-500 hover:bg-amber-600"},
+{key:"eng",hi:"अंग्रेज़ी",en:"English",emoji:"🔤",card:"from-rose-50 to-pink-100 border-rose-400",btn:"bg-rose-500 hover:bg-rose-600"},
+{key:"hin",hi:"हिंदी",en:"Hindi",emoji:"📝",card:"from-orange-50 to-amber-100 border-orange-400",btn:"bg-orange-500 hover:bg-orange-600"},
+{key:"evs",hi:"पर्यावरण / विज्ञान",en:"EVS / Science",emoji:"🌱",card:"from-emerald-50 to-green-100 border-emerald-400",btn:"bg-emerald-600 hover:bg-emerald-700"}
+];
+const C6COL={hin:"from-orange-50 to-amber-100 border-orange-400|bg-orange-500 hover:bg-orange-600",math:"from-amber-50 to-yellow-100 border-amber-400|bg-amber-500 hover:bg-amber-600",sci:"from-emerald-50 to-green-100 border-emerald-400|bg-emerald-600 hover:bg-emerald-700",sst:"from-sky-50 to-blue-100 border-sky-400|bg-sky-600 hover:bg-sky-700",eng:"from-rose-50 to-pink-100 border-rose-400|bg-rose-500 hover:bg-rose-600",san:"from-violet-50 to-purple-100 border-violet-400|bg-violet-600 hover:bg-violet-700"};
+const MONTHS_HI=["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
+const DAYS_HI=["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
+const subjOf=k=>SUBJECTS.find(s=>s.key===k);
+
+const sp=s=>{s=s||"";const i=s.indexOf('|');return i<0?[s,s]:[s.slice(0,i),s.slice(i+1)]};
+const opt=s=>{const[hi,en]=sp(s);return{hi,en}};
+const fromGK=r=>({visual:r[0],catHi:r[1],catEn:r[2],qHi:r[3],qEn:r[4],options:r[5].map(opt),correct:r[6],hintHi:r[7],hintEn:r[8],expHi:r[9],expEn:r[10]});
+const fromRow=(r,catHi,catEn,emoji)=>{const[hH,hE]=sp(r[4]),[eH,eE]=sp(r[5]);return{visual:r[0]||emoji,catHi,catEn,qHi:r[1],qEn:r[2],options:r[3].map(opt),correct:0,hintHi:hH,hintEn:hE,expHi:eH,expEn:eE}};
+
+const QS={};
+for(let c=1;c<=5;c++){
+  QS[c]={gk:((window.GK_BANK||{})[c]||[]).map(fromGK)};
+  const sb=(window.SUBJ_BANK||{})[c]||{};
+  SUBJECTS.slice(1).forEach(s=>{QS[c][s.key]=(sb[s.key]||[]).map(r=>fromRow(r,s.hi,s.en,s.emoji))});
+}
+// Class 6: subject -> chapters -> questions
+const C6=window.CLASS6||{subjects:[]};
+C6.subjects.forEach(s=>s.chapters.forEach(ch=>{ch.subj=s;ch.Q=ch.qs.map(r=>fromRow(r,`${s.hi} • पाठ ${ch.n}`,`${s.en} • Ch ${ch.n}`,s.emoji))}));
+const c6Sub=k=>C6.subjects.find(s=>s.key===k);
+
+let cls=1,subj='gk',active=[],idx=0,score=0,answered=false,wrong=[],sound=true,sheetReturn='homeScreen';
+let cur={key:'',label:'',labelEn:'',restart:null,back:null};
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const bestKey=(c,s)=>s==='gk'?'gkbest'+c:`best_${c}_${s}`;
+const shuffle=(a,rnd=Math.random)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const both=o=>o.hi!==o.en?`${o.hi} (${o.en})`:o.hi;
+
+// ---- Date-wise daily quiz (changes every day at 5:30 AM) ----
+function quizDay(){const d=new Date(Date.now()-330*60000);return d}
+function dayKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function seeded(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}return function(){h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);let t=(h^=h>>>16)>>>0;t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,t|1);r^=r+Math.imul(r^r>>>7,r|61);return((r^r>>>14)>>>0)/4294967296}}
+const sessIdx=m=>(m-7+12)%12; // July = 0 … March = 8, April–June = 9–11 (holidays)
+function dailyPlan(d){
+  const m=d.getMonth()+1,si=sessIdx(m),all=C6.subjects.flatMap(s=>s.chapters);
+  const taught=si>=9?all:all.filter(ch=>sessIdx(ch.month)<=si);
+  const pool=taught.length?taught:all;
+  const recent=pool.filter(ch=>si-sessIdx(ch.month)<=1&&si<9);
+  return {pool,recent:recent.length?recent:pool};
+}
+function dailyQuestions(d){
+  const rnd=seeded('c6-'+dayKey(d)),{pool,recent}=dailyPlan(d);
+  const qOf=list=>list.flatMap(ch=>ch.Q.map(q=>({q,ch})));
+  const picked=[],seen=new Set();
+  const take=(arr,n)=>{for(const x of shuffle(arr,rnd)){if(picked.length>=n)break;if(seen.has(x.q))continue;seen.add(x.q);picked.push(x)}};
+  // one question from each subject first, then fill: half from this & last month's chapters, rest from all taught chapters
+  C6.subjects.forEach(s=>take(qOf(recent.filter(ch=>ch.subj===s)).length?qOf(recent.filter(ch=>ch.subj===s)):qOf(pool.filter(ch=>ch.subj===s)),picked.length+1));
+  take(qOf(recent),Math.max(picked.length,6));
+  take(qOf(pool),10);
+  return {qs:shuffle(picked,rnd).map(x=>x.q),chapters:[...new Set(recent.map(ch=>`${ch.subj.hi}: ${ch.name}`))]};
+}
+
+function playSound(t){
+  if(!sound||typeof Tone==='undefined')return;
+  try{
+    if(Tone.context.state!=='running')Tone.start();
+    const s=new Tone.Synth().toDestination(),n=Tone.now();
+    const seq={correct:[["C5","16n",0],["E5","16n",.1],["G5","8n",.2]],wrong:[["E3","8n",0],["C3","8n",.15]],finish:[["C5","16n",0],["E5","16n",.1],["G5","16n",.2],["C6","4n",.3]]}[t]||[];
+    seq.forEach(([note,d,o])=>s.triggerAttackRelease(note,d,n+o));
+  }catch(e){}
+}
+const SCREENS=["homeScreen","subjectScreen","class6Screen","chapterScreen","quizScreen","resultScreen","studySheetScreen"];
+function show(id){SCREENS.forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');$(id).classList.remove('animate-pop');void $(id).offsetWidth;$(id).classList.add('animate-pop');window.scrollTo(0,0)}
+
+function renderHome(){
+  $('classGrid').innerHTML=Object.keys(CLASSES).map(c=>{
+    const s=CLASSES[c];
+    let line;
+    if(s.rbse){const done=store.get('daily_'+dayKey(quizDay()))!==null;line=done?'✅ आज का क्विज़ पूरा / Today done':'📅 आज का क्विज़ + 6 विषय / Daily quiz + 6 subjects'}
+    else{const done=SUBJECTS.filter(x=>store.get(bestKey(c,x.key))!==null).length;line=done?`🏅 ${done} / 5 विषय खेले (subjects played)`:'5 विषय • 100 प्रश्न / 5 subjects • 100 questions'}
+    return `<div class="pick-card bg-gradient-to-br ${s.card} border-4 rounded-3xl p-5 flex flex-col justify-between shadow-md">
+      <div><div class="text-5xl mb-2">${s.emoji}</div>
+      <h3 class="text-2xl font-extrabold text-slate-900">कक्षा ${c} <span class="text-lg text-slate-600">/ Class ${c}</span></h3>
+      ${s.rbse?'<span class="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-indigo-600 text-white text-xs font-extrabold">RBSE पाठ्यक्रम • हिंदी माध्यम</span>':''}
+      <p class="text-sm font-bold text-slate-700 mt-1 mb-3">${line}</p></div>
+      <button data-class="${c}" class="w-full py-3 rounded-2xl ${s.btn} text-white font-extrabold text-base shadow-lg min-h-[48px]">▶ आगे / Next</button></div>`;
+  }).join('');
+}
+function openClass(c){
+  cls=c;
+  if(c===6)return openClass6();
+  $('subjectTitle').textContent=`${CLASSES[c].emoji} कक्षा ${c} / Class ${c}`;
+  $('subjectGrid').innerHTML=SUBJECTS.map(s=>{
+    const n=QS[c][s.key].length,best=store.get(bestKey(c,s.key));
+    return `<div class="pick-card bg-gradient-to-br ${s.card} border-4 rounded-3xl p-5 flex flex-col justify-between shadow-md">
+      <div><div class="text-5xl mb-2">${s.emoji}</div>
+      <h3 class="text-xl font-extrabold text-slate-900">${s.hi}</h3>
+      <p class="text-sm font-bold text-slate-600">${s.en}</p>
+      <p class="text-xs font-extrabold text-amber-700 mt-2 mb-3">${best!==null?`🏅 सबसे अच्छा / Best: ${best} / ${n}`:`${n} प्रश्न / Questions`}</p></div>
+      <button data-subject="${s.key}" class="w-full py-3 rounded-2xl ${s.btn} text-white font-extrabold text-base shadow-lg min-h-[48px]">▶ शुरू करें / Start</button></div>`;
+  }).join('');
+  show('subjectScreen');
+}
+function openClass6(){
+  cls=6;
+  const d=quizDay(),plan=dailyQuestions(d),done=store.get('daily_'+dayKey(d));
+  $('c6Board').textContent=C6.board||'';
+  $('dailyDate').textContent=`${DAYS_HI[d.getDay()]}, ${d.getDate()} ${MONTHS_HI[d.getMonth()]} ${d.getFullYear()}`;
+  $('dailyInfo').textContent=`${plan.qs.length} प्रश्न • सभी विषय मिले-जुले • रोज़ सुबह 5:30 बजे नया क्विज़ / New quiz every day at 5:30 AM`;
+  $('dailyDone').textContent=done!==null?`✅ आज का स्कोर / Today's score: ${done} / ${plan.qs.length} — दोबारा खेल सकते हैं`:'';
+  $('c6SubjectGrid').innerHTML=C6.subjects.map(s=>{
+    const [card,btn]=C6COL[s.key].split('|'),nq=s.chapters.reduce((a,ch)=>a+ch.Q.length,0),best=store.get(`c6_${s.key}_all`);
+    return `<div class="pick-card bg-gradient-to-br ${card} border-4 rounded-3xl p-5 flex flex-col justify-between shadow-md">
+      <div><div class="text-5xl mb-2">${s.emoji}</div>
+      <h3 class="text-xl font-extrabold text-slate-900">${s.hi} <span class="text-base text-slate-600">/ ${s.en}</span></h3>
+      <p class="text-sm font-bold text-indigo-700">📘 ${s.book}</p>
+      <p class="text-xs font-extrabold text-amber-700 mt-2 mb-3">${s.chapters.length} पाठ • ${nq} प्रश्न${best!==null?` • 🏅 ${best}/${nq}`:''}</p></div>
+      <button data-c6="${s.key}" class="w-full py-3 rounded-2xl ${btn} text-white font-extrabold text-base shadow-lg min-h-[48px]">📚 पाठ चुनें / Chapters</button></div>`;
+  }).join('');
+  show('class6Screen');
+}
+function openChapters(k){
+  const s=c6Sub(k);subj=k;
+  const nq=s.chapters.reduce((a,ch)=>a+ch.Q.length,0);
+  $('chapTitle').textContent=`${s.emoji} ${s.hi} / ${s.en}`;
+  $('chapBook').textContent=`कक्षा 6 • पुस्तक: ${s.book}`;
+  $('chapAll').textContent=`▶ सभी पाठ एक साथ (${nq} प्रश्न) / All chapters`;
+  $('chapList').innerHTML=s.chapters.map(ch=>{
+    const best=store.get(`c6_${k}_${ch.n}`);
+    return `<button data-chap="${ch.n}" class="w-full text-left flex items-center gap-3 p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-400 min-h-[56px]">
+      <span class="px-2.5 py-1 rounded-xl bg-indigo-600 text-white font-extrabold text-xs shrink-0">पाठ ${ch.n}</span>
+      <span class="flex-1"><span class="block font-extrabold text-slate-900">${ch.name}</span><span class="block text-xs font-bold text-slate-500">${MONTHS_HI[ch.month-1]} • ${ch.Q.length} प्रश्न${best!==null?` • 🏅 ${best}/${ch.Q.length}`:''}</span></span>
+      <span class="text-indigo-600 font-extrabold">▶</span></button>`;
+  }).join('');
+  show('chapterScreen');
+}
+
+function runQuiz(list,o){
+  active=shuffle(list).map(q=>{const order=shuffle(q.options.map((_,i)=>i));return {...q,options:order.map(i=>q.options[i]),correct:order.indexOf(q.correct)}});
+  cur=o;
+  $('quizSetBadge').textContent=o.label;
+  idx=0;score=0;wrong=[];$('liveScore').textContent='0';
+  show('quizScreen');render();
+}
+function startQuiz(s){
+  subj=s;const so=subjOf(s);
+  runQuiz(QS[cls][s],{key:bestKey(cls,s),label:`${CLASSES[cls].emoji} कक्षा ${cls} • ${so.emoji} ${so.hi}`,what:`कक्षा ${cls} • ${so.hi} / Class ${cls} • ${so.en}`,restart:()=>startQuiz(s),back:()=>openClass(cls)});
+}
+function startChapter(k,n){
+  const s=c6Sub(k);subj=k;
+  if(n==='all'){runQuiz(s.chapters.flatMap(ch=>ch.Q),{key:`c6_${k}_all`,label:`🎒 कक्षा 6 • ${s.emoji} ${s.hi} • सभी पाठ`,what:`कक्षा 6 • ${s.hi} • सभी पाठ / All chapters`,restart:()=>startChapter(k,'all'),back:()=>openChapters(k)});return}
+  const ch=s.chapters.find(c=>c.n===n);
+  runQuiz(ch.Q,{key:`c6_${k}_${n}`,label:`🎒 कक्षा 6 • ${s.hi} • पाठ ${n}`,what:`कक्षा 6 • ${s.hi} • पाठ ${n}: ${ch.name}`,restart:()=>startChapter(k,n),back:()=>openChapters(k)});
+}
+function startDaily(){
+  const d=quizDay(),plan=dailyQuestions(d);
+  runQuiz(plan.qs,{key:'daily_'+dayKey(d),label:`📅 आज का क्विज़ • ${d.getDate()} ${MONTHS_HI[d.getMonth()]}`,what:`कक्षा 6 • आज का क्विज़ (${d.getDate()} ${MONTHS_HI[d.getMonth()]}) / Today's Quiz`,restart:startDaily,back:openClass6,daily:true});
+}
+
+function render(){
+  answered=false;
+  const q=active[idx],t=active.length;
+  $('questionCounterText').textContent=`प्रश्न ${idx+1} / ${t} (Question ${idx+1} of ${t})`;
+  $('categoryBadge').textContent=q.catHi===q.catEn?q.catHi:`${q.catHi} / ${q.catEn}`;
+  $('progressBar').style.width=`${Math.round((idx+1)/t*100)}%`;
+  $('visualGraphic').textContent=q.visual;
+  $('questionHi').textContent=q.qHi;
+  $('questionEn').textContent=q.qEn;$('questionEn').classList.toggle('hidden',q.qEn===q.qHi);
+  const hasHint=!!q.hintHi;
+  $('hintRow').classList.toggle('hidden',!hasHint);
+  $('hintBox').classList.add('hidden');
+  $('hintBox').innerHTML=hasHint?`<strong>💡 संकेत / Hint:</strong> ${q.hintHi}${q.hintEn!==q.hintHi?` <span class="text-amber-800">(${q.hintEn})</span>`:''}`:'';
+  $('feedbackBox').classList.add('hidden');$('nextBtn').classList.add('hidden');
+  const L=['अ / A','ब / B','स / C','द / D'];
+  $('optionsContainer').innerHTML=q.options.map((o,i)=>`<button type="button" data-opt="${i}" class="option-btn w-full text-left p-4 rounded-2xl border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-400 flex items-center gap-3 shadow-sm"><span class="px-2.5 py-1.5 rounded-xl bg-sky-200 text-sky-950 font-extrabold text-xs sm:text-sm shrink-0">${L[i]}</span><div><div class="font-extrabold text-base sm:text-lg text-slate-900 leading-tight">${o.hi}</div>${o.hi!==o.en?`<div class="font-bold text-xs sm:text-sm text-slate-600">${o.en}</div>`:''}</div></button>`).join('');
+}
+function select(sel){
+  if(answered)return;answered=true;
+  const q=active[idx],ok=sel===q.correct,c=q.options[q.correct];
+  $('optionsContainer').querySelectorAll('button').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.className='option-btn w-full text-left p-4 rounded-2xl border-emerald-500 bg-emerald-100 flex items-center gap-3 shadow-md';b.insertAdjacentHTML('beforeend','<span class="ml-auto text-2xl">✅</span>')}
+    else if(i===sel){b.className='option-btn w-full text-left p-4 rounded-2xl border-rose-500 bg-rose-100 flex items-center gap-3 shadow-md';b.insertAdjacentHTML('beforeend','<span class="ml-auto text-2xl">❌</span>')}
+    else b.className='option-btn w-full text-left p-4 rounded-2xl border-slate-200 bg-slate-50 opacity-60 flex items-center gap-3';
+  });
+  const fb=$('feedbackBox');
+  fb.classList.remove('hidden','bg-emerald-50','border-emerald-400','bg-rose-50','border-rose-400');
+  if(ok){
+    score++;$('liveScore').textContent=score;playSound('correct');
+    fb.classList.add('bg-emerald-50','border-emerald-400');
+    $('feedbackHeader').innerHTML='🎉 <span class="text-emerald-800">बिल्कुल सही! / Correct Answer! (+1)</span>';
+    $('correctAnswerReveal').innerHTML=`<span class="text-emerald-900">सही उत्तर / Answer: <strong>${both(c)}</strong></span>`;
+  }else{
+    playSound('wrong');wrong.push({q,chosen:q.options[sel]});
+    fb.classList.add('bg-rose-50','border-rose-400');
+    $('feedbackHeader').innerHTML='😅 <span class="text-rose-800">कोई बात नहीं! / Oops! Check the correct answer:</span>';
+    $('correctAnswerReveal').innerHTML=`<span class="text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-lg inline-block">✅ सही उत्तर / Correct Answer: <strong>${both(c)}</strong></span>`;
+  }
+  $('explanationHi').textContent=q.expHi;
+  $('explanationEn').textContent=q.expEn;$('explanationEn').classList.toggle('hidden',q.expEn===q.expHi);
+  $('nextBtn').textContent=idx===active.length-1?'परिणाम देखें / View Final Score 🏆':'अगला प्रश्न / Next Question →';
+  $('nextBtn').classList.remove('hidden');
+  $('nextBtn').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function next(){if(idx<active.length-1){idx++;render();window.scrollTo(0,0)}else results()}
+function results(){
+  playSound('finish');show('resultScreen');
+  const t=active.length,p=Math.round(score/t*100),key=cur.key;
+  const prevRaw=store.get(key),prev=prevRaw===null?-1:Number(prevRaw);
+  if(score>prev)store.set(key,score);
+  $('resultWhat').textContent=cur.what||'';
+  $('bestLine').textContent=prev<0?'':(score>prev?'🎊 नया रिकॉर्ड! / New best score!':`🏅 सबसे अच्छा स्कोर / Best: ${prev} / ${t}`);
+  $('totalQStat').textContent=t;$('correctQStat').textContent=score;$('wrongQStat').textContent=t-score;
+  let r=['⭐⭐⭐','अच्छा प्रयास! अभ्यास जारी रखें!','Good Effort! Keep Practicing!','🎖️'];
+  if(p>=85)r=['⭐⭐⭐⭐⭐','अद्भुत! आप चैंपियन हैं!','Outstanding! You are a Champion!','🏆'];
+  else if(p>=60)r=['⭐⭐⭐⭐','बहुत बढ़िया! शानदार प्रदर्शन!','Great Job! Very Good Performance!','🥇'];
+  if(cur.daily)r[2]+=' Come back tomorrow for a new quiz!';
+  [$('starRating').textContent,$('resultTitleHi').textContent,$('resultTitleEn').textContent,$('resultTrophy').textContent]=r;
+  $('wrongReviewContainer').classList.add('hidden');
+  $('reviewWrongBtn').classList.toggle('hidden',wrong.length===0);
+  $('wrongReviewList').innerHTML=wrong.map((w,i)=>{const c=w.q.options[w.q.correct];return `<div class="bg-rose-50/70 border-2 border-rose-200 rounded-2xl p-4"><div class="text-xs font-extrabold text-indigo-700 mb-1">${w.q.catHi}</div><div class="font-extrabold text-slate-900">${i+1}. ${w.q.qHi}</div>${w.q.qEn!==w.q.qHi?`<div class="font-bold text-slate-600 text-sm mb-2">${w.q.qEn}</div>`:''}<div class="text-sm text-rose-700 font-bold">❌ आपका उत्तर / Your Answer: ${both(w.chosen)}</div><div class="text-sm text-emerald-800 font-extrabold mt-0.5">✅ सही उत्तर / Correct: ${both(c)}</div><div class="text-xs text-slate-600 mt-1.5 bg-white p-2 rounded-xl border border-slate-200">${w.q.expHi}${w.q.expEn!==w.q.expHi?` (${w.q.expEn})`:''}</div></div>`}).join('');
+  renderHome();
+}
+
+// ---- Study sheet ----
+function fillSheetSubjects(){
+  const c=$('sheetClass').value,prev=$('sheetSubject').value;
+  const list=c==='6'?C6.subjects.map(s=>({key:s.key,hi:s.hi,en:s.en})):SUBJECTS;
+  $('sheetSubject').innerHTML=list.map(s=>`<option value="${s.key}">${s.hi} / ${s.en}</option>`).join('');
+  if(list.some(s=>s.key===prev))$('sheetSubject').value=prev;
+}
+function openSheet(){
+  sheetReturn=SCREENS.find(s=>!$(s).classList.contains('hidden'))||'homeScreen';
+  if(sheetReturn==='studySheetScreen')sheetReturn='homeScreen';
+  $('sheetClass').value=String(cls);fillSheetSubjects();
+  if([...$('sheetSubject').options].some(o=>o.value===subj))$('sheetSubject').value=subj;
+  show('studySheetScreen');sheet();
+}
+const qRow=(q,i)=>{const a=q.options[q.correct];return `<div class="border-2 border-slate-200 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/60"><div class="flex items-start gap-3"><span class="px-2.5 py-1 rounded-xl bg-sky-600 text-white font-extrabold text-xs shrink-0 mt-0.5">प्र. ${i+1}</span><div><div class="font-extrabold text-slate-900 text-sm sm:text-base">${q.qHi}</div>${q.qEn!==q.qHi?`<div class="font-semibold text-slate-600 text-xs sm:text-sm">${q.qEn}</div>`:''}</div></div><div class="sm:text-right bg-emerald-100 border border-emerald-300 px-3.5 py-2 rounded-xl shrink-0"><div class="font-extrabold text-emerald-900 text-sm sm:text-base">✅ ${a.hi}</div>${a.hi!==a.en?`<div class="font-bold text-emerald-800 text-xs">${a.en}</div>`:''}</div></div>`};
+function sheet(){
+  const c=$('sheetClass').value,s=$('sheetSubject').value;
+  if(c==='6'){
+    const S=c6Sub(s)||C6.subjects[0];
+    $('sheetTitle').textContent=`कक्षा 6 • ${S.hi} — ${S.book}`;
+    $('studySheetList').innerHTML=S.chapters.map(ch=>`<h3 class="text-lg font-extrabold text-indigo-800 pt-3">पाठ ${ch.n}: ${ch.name}</h3>`+ch.Q.map(qRow).join('')).join('');
+    return;
+  }
+  const so=subjOf(s)||SUBJECTS[0];
+  $('sheetTitle').textContent=`कक्षा ${c} • ${so.hi} (Class ${c} • ${so.en})`;
+  $('studySheetList').innerHTML=QS[c][so.key].map(qRow).join('');
+}
+
+$('sheetClass').innerHTML=Object.keys(CLASSES).map(c=>`<option value="${c}">कक्षा ${c} / Class ${c}</option>`).join('');
+fillSheetSubjects();
+renderHome();
+
+$('classGrid').addEventListener('click',e=>{const b=e.target.closest('[data-class]');if(b)openClass(Number(b.dataset.class))});
+$('subjectGrid').addEventListener('click',e=>{const b=e.target.closest('[data-subject]');if(b)startQuiz(b.dataset.subject)});
+$('c6SubjectGrid').addEventListener('click',e=>{const b=e.target.closest('[data-c6]');if(b)openChapters(b.dataset.c6)});
+$('chapList').addEventListener('click',e=>{const b=e.target.closest('[data-chap]');if(b)startChapter(subj,Number(b.dataset.chap))});
+$('chapAll').addEventListener('click',()=>startChapter(subj,'all'));
+$('chapBack').addEventListener('click',openClass6);
+$('dailyStart').addEventListener('click',startDaily);
+document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>{renderHome();show('homeScreen')}));
+document.querySelectorAll('[data-subjects]').forEach(b=>b.addEventListener('click',()=>{if(cur.back)cur.back();else openClass(cls)}));
+$('optionsContainer').addEventListener('click',e=>{const b=e.target.closest('[data-opt]');if(b)select(Number(b.dataset.opt))});
+$('hintBtn').addEventListener('click',()=>$('hintBox').classList.toggle('hidden'));
+$('nextBtn').addEventListener('click',next);
+$('restartBtn').addEventListener('click',()=>cur.restart&&cur.restart());
+$('reviewWrongBtn').addEventListener('click',()=>$('wrongReviewContainer').classList.toggle('hidden'));
+$('studyBtn').addEventListener('click',openSheet);
+$('sheetBack').addEventListener('click',()=>{if(sheetReturn==='subjectScreen')openClass(cls);else if(sheetReturn==='class6Screen')openClass6();else show(sheetReturn)});
+$('sheetClass').addEventListener('change',()=>{fillSheetSubjects();sheet()});
+$('sheetSubject').addEventListener('change',sheet);
+$('soundToggleBtn').addEventListener('click',()=>{sound=!sound;$('soundIcon').textContent=sound?'🔊':'🔇';$('soundLabel').textContent=sound?'आवाज़ चालू / Sound ON':'आवाज़ बंद / Sound OFF'});
+}
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
+</body>
+</html>

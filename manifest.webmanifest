@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Bachchon Ka Quiz - Class 1 to 6",
+  "short_name": "Bachchon Quiz",
+  "description": "कक्षा 1 से 6 के बच्चों के लिए क्विज़; कक्षा 6 में RBSE पाठ्यक्रम और रोज़ नया क्विज़। Class-wise bilingual quiz for primary school children.",
+  "lang": "hi",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fef9c3",
+  "theme_color": "#0284c7",
+  "categories": ["education", "kids"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
